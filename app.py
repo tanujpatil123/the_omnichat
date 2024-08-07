@@ -178,14 +178,14 @@ def main():
 
     # --- Page Config ---
     st.set_page_config(
-        page_title="The OmniChat",
+        page_title="The Completion AI",
         page_icon="🤖",
         layout="centered",
-        initial_sidebar_state="expanded",
+        initial_sidebar_state="collapsed",
     )
 
     # --- Header ---
-    st.html("""<h1 style="text-align: center; color: #6ca395;">🤖 <i>The OmniChat</i> 💬</h1>""")
+    st.html("""<h2 style="text-align: center; color: #6ca395;">🤖 <i>The Completion AI</i> 💬</h2>""")
 
     # --- Side Bar ---
     with st.sidebar:
@@ -209,17 +209,7 @@ def main():
     if (openai_api_key == "" or openai_api_key is None or "sk-" not in openai_api_key) and (google_api_key == "" or google_api_key is None) and (anthropic_api_key == "" or anthropic_api_key is None):
         st.write("#")
         st.warning("⬅️ Please introduce an API Key to continue...")
-
-        with st.sidebar:
-            st.write("#")
-            st.write("#")
-            st.video("https://www.youtube.com/watch?v=7i9j8M_zidA")
-            st.write("📋[Medium Blog: OpenAI GPT-4o](https://medium.com/@enricdomingo/code-the-omnichat-app-integrating-gpt-4o-your-python-chatgpt-d399b90d178e)")
-            st.video("https://www.youtube.com/watch?v=1IQmWVFNQEs")
-            st.write("📋[Medium Blog: Google Gemini](https://medium.com/@enricdomingo/how-i-add-gemini-1-5-pro-api-to-my-app-chat-with-videos-images-and-audios-f42171606143)")
-            st.video("https://www.youtube.com/watch?v=kXIOazjgV-8")
-            st.write("📋[Medium Blog: Anthropic Claude 3.5](https://medium.com/p/7ec4623e2dac)")
-
+        
     else:
         client = OpenAI(api_key=openai_api_key)
 
@@ -278,62 +268,7 @@ def main():
 
             st.divider()
 
-            # Image Upload
-            if model in ["gpt-4o", "gpt-4-turbo", "gemini-1.5-flash", "gemini-1.5-pro", "claude-3-5-sonnet-20240620"]:
-                    
-                st.write(f"### **🖼️ Add an image{' or a video file' if model_type=='google' else ''}:**")
 
-                def add_image_to_messages():
-                    if st.session_state.uploaded_img or ("camera_img" in st.session_state and st.session_state.camera_img):
-                        img_type = st.session_state.uploaded_img.type if st.session_state.uploaded_img else "image/jpeg"
-                        if img_type == "video/mp4":
-                            # save the video file
-                            video_id = random.randint(100000, 999999)
-                            with open(f"video_{video_id}.mp4", "wb") as f:
-                                f.write(st.session_state.uploaded_img.read())
-                            st.session_state.messages.append(
-                                {
-                                    "role": "user", 
-                                    "content": [{
-                                        "type": "video_file",
-                                        "video_file": f"video_{video_id}.mp4",
-                                    }]
-                                }
-                            )
-                        else:
-                            raw_img = Image.open(st.session_state.uploaded_img or st.session_state.camera_img)
-                            img = get_image_base64(raw_img)
-                            st.session_state.messages.append(
-                                {
-                                    "role": "user", 
-                                    "content": [{
-                                        "type": "image_url",
-                                        "image_url": {"url": f"data:{img_type};base64,{img}"}
-                                    }]
-                                }
-                            )
-
-                cols_img = st.columns(2)
-
-                with cols_img[0]:
-                    with st.popover("📁 Upload"):
-                        st.file_uploader(
-                            f"Upload an image{' or a video' if model_type == 'google' else ''}:", 
-                            type=["png", "jpg", "jpeg"] + (["mp4"] if model_type == "google" else []), 
-                            accept_multiple_files=False,
-                            key="uploaded_img",
-                            on_change=add_image_to_messages,
-                        )
-
-                with cols_img[1]:                    
-                    with st.popover("📸 Camera"):
-                        activate_camera = st.checkbox("Activate camera")
-                        if activate_camera:
-                            st.camera_input(
-                                "Take a picture", 
-                                key="camera_img",
-                                on_change=add_image_to_messages,
-                            )
 
             # Audio Upload
             st.write("#")
@@ -373,15 +308,7 @@ def main():
 
                     audio_file_added = True
 
-            st.divider()
-            st.video("https://www.youtube.com/watch?v=7i9j8M_zidA")
-            st.write("📋[Medium Blog: OpenAI GPT-4o](https://medium.com/@enricdomingo/code-the-omnichat-app-integrating-gpt-4o-your-python-chatgpt-d399b90d178e)")
-            st.video("https://www.youtube.com/watch?v=1IQmWVFNQEs")
-            st.write("📋[Medium Blog: Google Gemini](https://medium.com/@enricdomingo/how-i-add-gemini-1-5-pro-api-to-my-app-chat-with-videos-images-and-audios-f42171606143)")
-            st.video("https://www.youtube.com/watch?v=kXIOazjgV-8")
-            st.write("📋[Medium Blog: Anthropic Claude 3.5](https://medium.com/p/7ec4623e2dac)")
-
-
+            
 
         # Chat input
         if prompt := st.chat_input("Hi! Ask me anything...") or audio_prompt or audio_file_added:
@@ -435,6 +362,63 @@ def main():
                 st.html(audio_html)
 
 
+# Image Upload
+    if model in ["gpt-4o", "gpt-4-turbo", "gemini-1.5-flash", "gemini-1.5-pro", "claude-3-5-sonnet-20240620"]:
+                    
+        st.write(f"###### **🖼️ Add an image{' or a video file' if model_type=='google' else ''}:**")
+
+        def add_image_to_messages():
+            if st.session_state.uploaded_img or ("camera_img" in st.session_state and st.session_state.camera_img):
+                img_type = st.session_state.uploaded_img.type if st.session_state.uploaded_img else "image/jpeg"
+                if img_type == "video/mp4":
+                    # save the video file
+                    video_id = random.randint(100000, 999999)
+                    with open(f"video_{video_id}.mp4", "wb") as f:
+                        f.write(st.session_state.uploaded_img.read())
+                    st.session_state.messages.append(
+                        {
+                            "role": "user", 
+                            "content": [{
+                                "type": "video_file",
+                                "video_file": f"video_{video_id}.mp4",
+                            }]
+                        }
+                    )
+                else:
+                    raw_img = Image.open(st.session_state.uploaded_img or st.session_state.camera_img)
+                    img = get_image_base64(raw_img)
+                    st.session_state.messages.append(
+                        {
+                            "role": "user", 
+                            "content": [{
+                                "type": "image_url",
+                                "image_url": {"url": f"data:{img_type};base64,{img}"}
+                            }]
+                        }
+                    )
+
+        cols_img = st.columns(2)
+
+        with cols_img[0]:
+            with st.popover("📁 Upload"):
+                st.file_uploader(
+                    f"Upload an image{' or a video' if model_type == 'google' else ''}:", 
+                    type=["png", "jpg", "jpeg"] + (["mp4"] if model_type == "google" else []), 
+                    accept_multiple_files=False,
+                    key="uploaded_img",
+                    on_change=add_image_to_messages,
+                )
+
+        with cols_img[1]:                    
+            with st.popover("📸 Camera"):
+                activate_camera = "Activate camera"
+                if activate_camera:
+                    st.camera_input(
+                        "Take a picture", 
+                        key="camera_img",
+                        on_change=add_image_to_messages,
+                    
+                    )
 
 if __name__=="__main__":
     main()
