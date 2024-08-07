@@ -410,7 +410,7 @@ def main():
                 )
 
         with cols_img[1]:                    
-            with st.popover("📸 Camera"):
+            if st.button("📸 Camera"):
                 activate_camera = "Activate camera"
                 if activate_camera:
                     st.camera_input(
